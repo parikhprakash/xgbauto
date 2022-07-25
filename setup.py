@@ -6,7 +6,6 @@ with open("README.md") as f:
 
 INSTALL_REQUIRES = [
     "fastapi==0.70.0",
-    "loguru==0.5.3",
     "numpy==1.21.3",
     "optuna==2.10.0",
     "pyarrow==6.0.0",
@@ -24,8 +23,8 @@ if __name__ == "__main__":
         description="autoxgb: tuning xgboost with optuna",
         long_description=long_description,
         long_description_content_type="text/markdown",
-        author="Abhishek Thakur",
-        author_email="abhishek4@gmail.com",
+        author="Prakash Parikh",
+        author_email="parikhprakash@gmail.com",
         url="https://github.com/abhishekkrthakur/autoxgb",
         license="Apache 2.0",
         package_dir={"": "src"},
