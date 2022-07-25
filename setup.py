@@ -29,7 +29,7 @@ if __name__ == "__main__":
         license="Apache 2.0",
         package_dir={"": "src"},
         packages=find_packages("src"),
-        entry_points={"console_scripts": ["xhbauto=xgbauto.cli.autoxgb:main"]},
+        entry_points={"console_scripts": ["xgbauto=xgbauto.cli.autoxgb:main"]},
         include_package_data=True,
         install_requires=INSTALL_REQUIRES,
         platforms=["linux", "unix"],
