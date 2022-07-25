@@ -19,17 +19,17 @@ INSTALL_REQUIRES = [
 
 if __name__ == "__main__":
     setup(
-        name="autoxgb",
-        description="autoxgb: tuning xgboost with optuna",
+        name="xgbauto",
+        description="xgbauto: tuning xgboost with optuna",
         long_description=long_description,
         long_description_content_type="text/markdown",
         author="Prakash Parikh",
         author_email="parikhprakash@gmail.com",
-        url="https://github.com/abhishekkrthakur/autoxgb",
+        url="https://github.com/parikhprakash/xgbauto",
         license="Apache 2.0",
         package_dir={"": "src"},
         packages=find_packages("src"),
-        entry_points={"console_scripts": ["autoxgb=autoxgb.cli.autoxgb:main"]},
+        entry_points={"console_scripts": ["xhbauto=xgbauto.cli.autoxgb:main"]},
         include_package_data=True,
         install_requires=INSTALL_REQUIRES,
         platforms=["linux", "unix"],

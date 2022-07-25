@@ -1,4 +1,4 @@
-from autoxgb import AutoXGB
+from xgbauto import AutoXGB
 
 
 # required parameters:

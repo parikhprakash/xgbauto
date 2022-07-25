@@ -13,7 +13,7 @@ NOTE: PRs are currently not accepted. If there are issues/problems, please creat
 
 Install using pip
 
-    pip install autoxgb
+    pip install xgbauto
 
 
 # Usage
@@ -109,7 +109,7 @@ fast = False
 To train a new model, you can run:
 
 ```python
-from autoxgb import AutoXGB
+from xgbauto import AutoXGB
 
 
 # required parameters:
@@ -155,7 +155,7 @@ axgb.train()
 Train the model using the `autoxgb train` command. The parameters are same as above.
 
 ```
-autoxgb train \
+xgbauto train \
  --train_filename datasets/30train.csv \
  --output outputs/30days \
  --test_filename datasets/30test.csv \
@@ -165,18 +165,18 @@ autoxgb train \
 You can also serve the trained model using the `autoxgb serve` command.
 
 ```bash
-autoxgb serve --model_path outputs/mll --host 0.0.0.0 --debug
+xgbauto serve --model_path outputs/mll --host 0.0.0.0 --debug
 ```
 
 To know more about a command, run:
 
-    `autoxgb <command> --help` 
+    `xgbauto <command> --help` 
 
 ```
-autoxgb train --help
+xgbauto train --help
 
 
-usage: autoxgb <command> [<args>] train [-h] --train_filename TRAIN_FILENAME [--test_filename TEST_FILENAME] --output
+usage: xgbauto <command> [<args>] train [-h] --train_filename TRAIN_FILENAME [--test_filename TEST_FILENAME] --output
                                         OUTPUT [--task {classification,regression}] [--idx IDX] [--targets TARGETS]
                                         [--num_folds NUM_FOLDS] [--features FEATURES] [--use_gpu] [--fast]
                                         [--seed SEED] [--time_limit TIME_LIMIT]

@@ -9,7 +9,7 @@ from .train import TrainAutoXGBCommand
 def main():
     parser = argparse.ArgumentParser(
         "AutoXGB CLI",
-        usage="autoxgb <command> [<args>]",
+        usage="xgbauto <command> [<args>]",
         epilog="For more information about a command, run: `autoxgb <command> --help`",
     )
     parser.add_argument("--version", "-v", help="Display AutoXGB version", action="store_true")
