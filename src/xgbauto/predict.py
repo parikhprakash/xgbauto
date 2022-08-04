@@ -22,8 +22,12 @@ class AutoXGBPredict:
 
     def __post_init__(self):
         self.model_config = joblib.load(os.path.join(self.model_path, "axgb.config"))
-        self.target_encoder = joblib.load(os.path.join(self.model_path, "axgb.target_encoder"))
-        self.categorical_encoders = joblib.load(os.path.join(self.model_path, "axgb.categorical_encoders"))
+        self.target_encoder = joblib.load(
+            os.path.join(self.model_path, "axgb.target_encoder")
+        )
+        self.categorical_encoders = joblib.load(
+            os.path.join(self.model_path, "axgb.categorical_encoders")
+        )
         self.models = []
         for fold in range(self.model_config.num_folds):
             model_ = joblib.load(os.path.join(self.model_path, f"axgb_model.{fold}"))
@@ -51,7 +55,9 @@ class AutoXGBPredict:
             fold_test = df.copy(deep=True)
             if len(categorical_features) > 0:
                 categorical_encoder = self.categorical_encoders[fold]
-                fold_test[categorical_features] = categorical_encoder.transform(fold_test[categorical_features].values)
+                fold_test[categorical_features] = categorical_encoder.transform(
+                    fold_test[categorical_features].values
+                )
 
             test_features = fold_test[self.model_config.features]
 
@@ -65,10 +71,15 @@ class AutoXGBPredict:
             ):
                 test_preds_mll = []
                 for midx in range(len(self.models[fold])):
-                    if self.model_config.problem_type == ProblemType.multi_column_regression:
+                    if (
+                        self.model_config.problem_type
+                        == ProblemType.multi_column_regression
+                    ):
                         test_pred_temp = self.models[fold][midx].predict(test_features)
                     else:
-                        test_pred_temp = self.models[fold][midx].predict_proba(test_features)[:, 1]
+                        test_pred_temp = self.models[fold][midx].predict_proba(
+                            test_features
+                        )[:, 1]
                     test_preds_mll.append(test_pred_temp)
 
                 test_preds = np.column_stack(test_preds_mll)
@@ -82,13 +93,21 @@ class AutoXGBPredict:
 
         final_preds = np.mean(final_preds, axis=0)
         if self.target_encoder is None:
-            final_preds = pd.DataFrame(final_preds, columns=self.model_config.target_cols)
+            final_preds = pd.DataFrame(
+                final_preds, columns=self.model_config.target_cols
+            )
         else:
-            final_preds = pd.DataFrame(final_preds, columns=list(self.target_encoder.classes_))
+            final_preds = pd.DataFrame(
+                final_preds, columns=list(self.target_encoder.classes_)
+            )
         final_preds.insert(loc=0, column=self.model_config.idx, value=test_ids)
         return final_preds
 
-    def predict_single(self, sample: Dict[str, Union[str, int, float]] = None, fast_predict: bool = True):
+    def predict_single(
+        self,
+        sample: Dict[str, Union[str, int, float]] = None,
+        fast_predict: bool = True,
+    ):
         sample = json.loads(sample)
         sample_df = pd.DataFrame.from_dict(sample, orient="index").T
         sample_df[self.model_config.idx] = 0

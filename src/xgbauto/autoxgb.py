@@ -37,7 +37,9 @@ class AutoXGB:
 
     def __post_init__(self):
         if os.path.exists(self.output):
-            raise Exception("Output directory already exists. Please specify some other directory.")
+            raise Exception(
+                "Output directory already exists. Please specify some other directory."
+            )
         os.makedirs(self.output, exist_ok=True)
         logger.info(f"Output directory: {self.output}")
 
@@ -57,9 +59,14 @@ class AutoXGB:
 
         logger.info("Creating folds")
         train_df["kfold"] = -1
-        if problem_type in (ProblemType.binary_classification, ProblemType.multi_class_classification):
+        if problem_type in (
+            ProblemType.binary_classification,
+            ProblemType.multi_class_classification,
+        ):
             y = train_df[self.targets].values
-            kf = StratifiedKFold(n_splits=self.num_folds, shuffle=True, random_state=self.seed)
+            kf = StratifiedKFold(
+                n_splits=self.num_folds, shuffle=True, random_state=self.seed
+            )
             for fold, (_, valid_indicies) in enumerate(kf.split(X=train_df, y=y)):
                 train_df.loc[valid_indicies, "kfold"] = fold
         elif problem_type == ProblemType.single_column_regression:
@@ -67,9 +74,15 @@ class AutoXGB:
             num_bins = int(np.floor(1 + np.log2(len(train_df))))
             if num_bins > 10:
                 num_bins = 10
-            kf = StratifiedKFold(n_splits=self.num_folds, shuffle=True, random_state=self.seed)
-            train_df["bins"] = pd.cut(train_df[self.targets].values.ravel(), bins=num_bins, labels=False)
-            for fold, (_, valid_indicies) in enumerate(kf.split(X=train_df, y=train_df.bins.values)):
+            kf = StratifiedKFold(
+                n_splits=self.num_folds, shuffle=True, random_state=self.seed
+            )
+            train_df["bins"] = pd.cut(
+                train_df[self.targets].values.ravel(), bins=num_bins, labels=False
+            )
+            for fold, (_, valid_indicies) in enumerate(
+                kf.split(X=train_df, y=train_df.bins.values)
+            ):
                 train_df.loc[valid_indicies, "kfold"] = fold
             train_df = train_df.drop("bins", axis=1)
         elif problem_type == ProblemType.multi_column_regression:
@@ -136,7 +149,9 @@ class AutoXGB:
             elif target_type == "multilabel-indicator":
                 problem_type = ProblemType.multi_label_classification
             else:
-                raise Exception("Unable to infer `problem_type`. Please provide `classification` or `regression`")
+                raise Exception(
+                    "Unable to infer `problem_type`. Please provide `classification` or `regression`"
+                )
         logger.info(f"Problem type: {problem_type.name}")
         return problem_type
 
@@ -166,7 +181,10 @@ class AutoXGB:
             self.features = [x for x in self.features if x not in ignore_columns]
 
         # encode target(s)
-        if problem_type in [ProblemType.binary_classification, ProblemType.multi_class_classification]:
+        if problem_type in [
+            ProblemType.binary_classification,
+            ProblemType.multi_class_classification,
+        ]:
             logger.info("Encoding target(s)")
             target_encoder = LabelEncoder()
             target_encoder.fit(
@@ -203,16 +221,30 @@ class AutoXGB:
             if self.test_filename is not None:
                 test_fold = test_df.copy(deep=True)
             if len(categorical_features) > 0:
-                ord_encoder = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=np.nan)
-                fold_train[categorical_features] = ord_encoder.fit_transform(fold_train[categorical_features].values)
-                fold_valid[categorical_features] = ord_encoder.transform(fold_valid[categorical_features].values)
+                ord_encoder = OrdinalEncoder(
+                    handle_unknown="use_encoded_value", unknown_value=np.nan
+                )
+                fold_train[categorical_features] = ord_encoder.fit_transform(
+                    fold_train[categorical_features].values
+                )
+                fold_valid[categorical_features] = ord_encoder.transform(
+                    fold_valid[categorical_features].values
+                )
                 if self.test_filename is not None:
-                    test_fold[categorical_features] = ord_encoder.transform(test_fold[categorical_features].values)
+                    test_fold[categorical_features] = ord_encoder.transform(
+                        test_fold[categorical_features].values
+                    )
                 categorical_encoders[fold] = ord_encoder
-            fold_train.to_feather(os.path.join(self.output, f"train_fold_{fold}.feather"))
-            fold_valid.to_feather(os.path.join(self.output, f"valid_fold_{fold}.feather"))
+            fold_train.to_feather(
+                os.path.join(self.output, f"train_fold_{fold}.feather")
+            )
+            fold_valid.to_feather(
+                os.path.join(self.output, f"valid_fold_{fold}.feather")
+            )
             if self.test_filename is not None:
-                test_fold.to_feather(os.path.join(self.output, f"test_fold_{fold}.feather"))
+                test_fold.to_feather(
+                    os.path.join(self.output, f"test_fold_{fold}.feather")
+                )
 
         # save config
         model_config = {}
