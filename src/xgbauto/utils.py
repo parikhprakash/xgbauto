@@ -257,7 +257,9 @@ def predict_model(model_config, best_params):
     xgb_model, use_predict_proba, eval_metric, _ = fetch_xgb_model_params(model_config)
 
     metrics = Metrics(model_config.problem_type)
+    test_metrics = Metrics(model_config.problem_type)
     scores = []
+    test_scores = []
 
     final_test_predictions = []
     final_valid_predictions = {}
@@ -283,6 +285,7 @@ def predict_model(model_config, best_params):
                 os.path.join(model_config.output, f"test_fold_{fold}.feather")
             )
             xtest = test_feather[model_config.features]
+            ytest = test_feather[model_config.targets].values
             test_ids = test_feather[model_config.idx].values
 
         ytrain = train_feather[model_config.targets].values
@@ -368,10 +371,18 @@ def predict_model(model_config, best_params):
 
         # calculate metric
         metric_dict = metrics.calculate(yvalid, ypred)
+        if model_config.test_filename is not None:
+            metric_test_dict = test_metrics.calculate(ytest,test_pred)
+            test_scores.append(metric_test_dict)
         scores.append(metric_dict)
         logger.info(f"Fold {fold} done!")
 
     mean_metrics = dict_mean(scores)
+    if model_config.test_filename is not None:
+        test_mean_metrics = dict_mean(test_scores)
+        logger.info(f"Test Metrics: {test_mean_metrics}")
+        with open("test_metrics.json","w") as fp:
+            json.dump(test_mean_metrics,fp)
     logger.info(f"Metrics: {mean_metrics}")
 
     # store metrics into the json file
@@ -380,7 +391,11 @@ def predict_model(model_config, best_params):
     save_valid_predictions(
         final_valid_predictions, model_config, target_encoder, "oof_predictions.csv"
     )
-
+    # save best params
+    logger.info(f"Best Params: {best_params}")
+    with open("best_params.json","w") as fp:
+        json.dump(best_params,fp)
+    
     if model_config.test_filename is not None:
         save_test_predictions(
             final_test_predictions,
